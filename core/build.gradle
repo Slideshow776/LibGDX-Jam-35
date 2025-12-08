@@ -51,7 +51,6 @@ dependencies {
   api "com.github.tommyettinger:libgdx-utils:$utilsVersion"
   api "com.github.tommyettinger:regexodus:$regExodusVersion"
   api "com.github.tommyettinger:textratypist:$textratypistVersion"
-  api "com.rafaskoberg.gdx:typing-label:$typingLabelVersion"
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"

@@ -12,7 +12,6 @@
   <inherits name="com.badlogic.gdx.controllers.controllers-gwt" />
   <inherits name="com.badlogic.gdx.physics.box2d.box2d-gwt" />
   <inherits name="com.github.tommyettinger.textratypist" />
-  <inherits name="com.rafaskoberg.gdx.typinglabel.typinglabel" />
   <inherits name="libgdx-utils" />
   <inherits name="no.sandramoen.libgdx35.MyGdxGame" />
   <inherits name="regexodus.regexodus" />
