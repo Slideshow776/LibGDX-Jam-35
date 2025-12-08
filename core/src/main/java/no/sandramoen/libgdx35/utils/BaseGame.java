@@ -33,11 +33,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static float vibrationStrength = 1f;
     public static final float UNIT_SCALE = 1 / 16f;
     public static final float WORLD_WIDTH = 16f;
-    public static final float WORLD_HEIGHT = 16f;
+    public static final float WORLD_HEIGHT = 9f;
 
-    public static int high_score = 0;
-    public static enum Difficulty {EASY, MEDIUM, HARD}
-    public static Difficulty current_difficulty;
 
     public BaseGame() {
         game = this;
