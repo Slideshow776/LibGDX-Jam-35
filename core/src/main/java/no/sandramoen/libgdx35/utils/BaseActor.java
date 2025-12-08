@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import no.sandramoen.libgdx35.utils.BaseGame;
@@ -459,6 +460,10 @@ public class BaseActor extends Group {
 
     public void centerAtActor(BaseActor baseActor) {
         centerAtPosition(baseActor.getX() + baseActor.getWidth() / 2, baseActor.getY() + baseActor.getHeight() / 2);
+    }
+
+    public Vector2 get_center_position() {
+        return new Vector2(getX(Align.center), getY(Align.center));
     }
 
     public void setOpacity(float opacity) {

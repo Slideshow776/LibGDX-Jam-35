@@ -6,7 +6,7 @@ lowMin: 100.0
 lowMax: 100.0
 - Count - 
 min: 0
-max: 50
+max: 10
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
@@ -20,8 +20,8 @@ timeline0: 0.0
 - Life - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 1000.0
-highMax: 1250.0
+highMin: 500.0
+highMax: 625.0
 relative: false
 scalingCount: 3
 scaling0: 1.0
@@ -77,8 +77,8 @@ active: false
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 10.0
-highMax: 80.0
+highMin: 400.0
+highMax: 500.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -114,9 +114,9 @@ active: false
 active: false
 - Tint - 
 colorsCount: 3
-colors0: 1.0
-colors1: 1.0
-colors2: 1.0
+colors0: 0.4862745
+colors1: 0.4862745
+colors2: 0.4862745
 timelineCount: 1
 timeline0: 0.0
 - Transparency - 
@@ -142,5 +142,5 @@ behind: false
 premultipliedAlpha: false
 spriteMode: single
 - Image Paths -
-key.png
+whitePixel.png
 

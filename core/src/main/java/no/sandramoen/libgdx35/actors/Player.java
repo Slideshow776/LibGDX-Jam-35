@@ -16,22 +16,21 @@ public class Player extends BaseActor {
 
     public Vector2 touch_position = new Vector2();
 
-    private float movementSpeed = 6f;
-    private float movementAcceleration = movementSpeed * 4f;
+    private float movementSpeed = 12f;
+    private float movementAcceleration = movementSpeed * 6f;
 
 
     public Player(Vector2 position, Stage stage) {
         super(position.x, position.y, stage);
         loadImage("whitePixel");
-        setDebug(true);
         setColor(new Color(0xec6827FF));
 
         // body
-        setSize(0.8f, 0.8f);
+        setSize(0.25f, 0.25f);
         centerAtPosition(position.x, position.y);
         touch_position.set(getX(), getY());
         setOrigin(Align.center);
-        setBoundaryPolygon(8, 0.5f);
+        setBoundaryPolygon(8, 0.9f);
 
         setWorldBounds(BaseGame.WORLD_WIDTH + 0.5f, BaseGame.WORLD_HEIGHT);
 
@@ -46,15 +45,8 @@ public class Player extends BaseActor {
     public void act(float delta) {
         super.act(delta);
 
-        // touch input
-        Vector2 position = new Vector2(getX(Align.center), getY(Align.center));
-        float distance = position.dst(touch_position);
-
-        if (distance > 1) {
-            Vector2 direction = touch_position.cpy().sub(position);
-            float angle_to_touch = direction.angleDeg();
-            accelerateAtAngle(angle_to_touch);
-        }
+        sampleTouch();
+        pollKeyboard();
 
         applyPhysics(delta);
         boundToWorld();
@@ -62,7 +54,18 @@ public class Player extends BaseActor {
 
 
     public boolean isMoving() {
-        return getSpeed() > 0.1f; // small threshold to avoid tiny jitter counts as moving
+        return getSpeed() > BaseGame.MOVEMENT_THRESHOLD;
+    }
+
+
+    private void sampleTouch() {
+        float distance = get_center_position().dst(touch_position);
+
+        if (distance > BaseGame.MOVEMENT_THRESHOLD) {
+            Vector2 direction = touch_position.cpy().sub(get_center_position());
+            float angle_to_touch = direction.angleDeg();
+            accelerateAtAngle(angle_to_touch);
+        }
     }
 
 
