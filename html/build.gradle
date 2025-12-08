@@ -47,7 +47,8 @@ gwt {
 }
 
 dependencies {
-  implementation "com.badlogicgames.box2dlights:box2dlights:$box2dlightsVersion:sources"
+  implementation "com.github.libgdx:box2dlights:$box2dlightsVersion:sources" // latest build from JitPack
+//  implementation "com.badlogicgames.box2dlights:box2dlights:$box2dlightsVersion:sources" // broken on HTML
   implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion:sources"
   implementation "com.badlogicgames.gdx:gdx-ai:$aiVersion:sources"
   implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
@@ -55,7 +56,8 @@ dependencies {
   implementation "com.google.jsinterop:jsinterop-annotations:2.1.0:sources"
   implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion:sources"
   implementation "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
-  implementation "com.github.tommyettinger:libgdx-utils:$utilsVersion:sources"
+//  implementation "com.github.tommyettinger:libgdx-utils:$utilsVersion:sources" // Maven Central releases
+  implementation "com.github.tommyettinger.gdx-utils:libgdx-utils:$utilsVersion:sources" // JitPack commits
   implementation "com.github.tommyettinger:regexodus:$regExodusVersion:sources"
   implementation "com.github.tommyettinger:textratypist:$textratypistVersion:sources"
   implementation project(':core')

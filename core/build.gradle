@@ -41,14 +41,16 @@ tasks {
   }
 }
 dependencies {
-  api "com.badlogicgames.box2dlights:box2dlights:$box2dlightsVersion"
+  api "com.github.libgdx:box2dlights:$box2dlightsVersion"
+//  api "com.badlogicgames.box2dlights:box2dlights:$box2dlightsVersion"
   api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
   api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
   api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
   api "com.github.tommyettinger:libgdx-texturepacker:$texturePackerOnlyVersion"
   api "com.github.tommyettinger:libgdx-textureunpacker:$textureUnpackerOnlyVersion"
-  api "com.github.tommyettinger:libgdx-utils:$utilsVersion"
+//  api "com.github.tommyettinger:libgdx-utils:$utilsVersion" // Maven Central releases
+  api "com.github.tommyettinger.gdx-utils:libgdx-utils:$utilsVersion" // JitPack commits
   api "com.github.tommyettinger:regexodus:$regExodusVersion"
   api "com.github.tommyettinger:textratypist:$textratypistVersion"
 
