@@ -13,7 +13,7 @@ public class Water extends BaseActor {
         loadImage("whitePixel");
 
         setSize(size.x, size.y);
-        setBoundaryRectangle();
+        setBoundaryRectangle(1f);
 
         setColor(new Color(0x266b82FF));
     }

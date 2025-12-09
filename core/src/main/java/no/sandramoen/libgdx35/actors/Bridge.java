@@ -17,14 +17,14 @@ public class Bridge extends BaseActor {
         setSize(size.x, size.y);
         setColor(new Color(0xdbb88dFF));
 
-        setBoundaryRectangle();
+        setBoundaryRectangle(1f);
 
         // guard rails
         left_rail = new BaseActor(getX(), getY(), stage);
         left_rail.loadImage("whitePixel");
         left_rail.setColor(new Color(0x987b57FF));
         left_rail.setSize(size.x * 0.1f, size.y);
-        left_rail.setBoundaryRectangle();
+        left_rail.setBoundaryRectangle(1f);
         stage.addActor(left_rail);
 
         right_rail = new BaseActor(0, 0, stage);
@@ -32,7 +32,7 @@ public class Bridge extends BaseActor {
         right_rail.setColor(new Color(0x987b57FF));
         right_rail.setSize(size.x * 0.1f, size.y);
         right_rail.setPosition(getX() + size.x - right_rail.getWidth(), getY());
-        right_rail.setBoundaryRectangle();
+        right_rail.setBoundaryRectangle(1f);
         stage.addActor(right_rail);
     }
 }

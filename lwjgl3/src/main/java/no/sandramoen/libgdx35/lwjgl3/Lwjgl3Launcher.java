@@ -15,9 +15,11 @@ public class Lwjgl3Launcher {
         createApplication();
     }
 
+
     private static Lwjgl3Application createApplication() {
         return new Lwjgl3Application(new MyGdxGame(), getDefaultConfiguration());
     }
+
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
@@ -38,18 +40,22 @@ public class Lwjgl3Launcher {
         configuration.setWindowIcon("images/excluded/icon_16x16.png", "images/excluded/icon_32x32.png", "images/excluded/icon_64x64.png");
 
         boolean isFullscreen = false;
-        if (isFullscreen)
+        if (isFullscreen) {
             configuration.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
-        else
-            setWindowedMode(.6f, configuration);
+        } else {
+            //setWindowedMode(.6f, configuration);
+            configuration.setWindowedMode(930, 930);
+        }
         return configuration;
     }
+
 
     private static String getCountryCode() {
         String countryCode = Locale.getDefault().getCountry().toLowerCase(Locale.ROOT);
         System.out.println("[DesktopLauncher] Locale => Country code: " + countryCode);
         return countryCode;
     }
+
 
     private static void setWindowedMode(float percentOfScreenSize, Lwjgl3ApplicationConfiguration config) {
         Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();

@@ -13,12 +13,12 @@ import no.sandramoen.libgdx35.utils.BaseGame;
 public class Sheep extends BaseActor {
 
     private final float BORDER_DISTANCE_THRESHOLD = 0.5f;
-    private final float PLAYER_DISTANCE_THRESHOLD = 5;
-    private final float ALIGNMENT_THRESHOLD = 2.5f;
-    private final float COHESION_THRESHOLD = 3.0f;
+    private final float PLAYER_DISTANCE_THRESHOLD = 7;
+    private final float ALIGNMENT_THRESHOLD = 1.0f;
+    private final float COHESION_THRESHOLD = 1.2f;
 
     private float walkingSpeed = 0.125f + MathUtils.random(-0.05f, 0.05f);
-    private float runningSpeed = 0.75f + MathUtils.random(-0.05f, 0.05f);
+    private float runningSpeed = 0.5f + MathUtils.random(-0.05f, 0.05f);
     private float movementAcceleration = runningSpeed * 0.75f + MathUtils.random(-0.05f, 0.05f);
 
 
@@ -29,12 +29,14 @@ public class Sheep extends BaseActor {
 
         // body
         setSize(
-            0.1f + MathUtils.random(-0.05f, 0.05f),
-            0.2f + MathUtils.random(-0.05f, 0.05f)
+            0.11f + MathUtils.random(-0.05f, 0.05f),
+            0.2f
         );
+        setSize(getWidth(), getWidth() * 2f + + MathUtils.random(-0.05f, 0.05f));
         centerAtPosition(position.x, position.y);
         setOrigin(Align.center);
-        setBoundaryPolygon(8, 0.9f);
+        setBoundaryRectangle(0.5f);
+        //setBoundaryPolygon(8, 0.9f);
 
         //setWorldBounds(BaseGame.WORLD_WIDTH + 0.5f, BaseGame.WORLD_HEIGHT);
 
@@ -79,6 +81,8 @@ public class Sheep extends BaseActor {
         if (isPlayerClose) {
             applyAlignment(sheep);
             applyCohesion(sheep);
+        } else {
+            wander();
         }
         applySeparation(sheep);
 
@@ -90,15 +94,12 @@ public class Sheep extends BaseActor {
         if (get_center_position().x < BORDER_DISTANCE_THRESHOLD) { // left border
             accelerateAtAngle(0);
             setRotation(getMotionAngle() - 90);
-            return;
         } else if (get_center_position().x > BaseGame.WORLD_WIDTH - BORDER_DISTANCE_THRESHOLD) { // right border
             accelerateAtAngle(180);
             setRotation(getMotionAngle() - 90);
-            return;
         } else if (get_center_position().y < BORDER_DISTANCE_THRESHOLD) { // bottom border
             accelerateAtAngle(90);
             setRotation(getMotionAngle() - 90);
-            return;
         }/* else if (get_center_position().y > BaseGame.WORLD_HEIGHT - BORDER_DISTANCE_THRESHOLD) { // top border
             accelerateAtAngle(270);
             setRotation(getMotionAngle() - 90);
@@ -169,10 +170,16 @@ public class Sheep extends BaseActor {
                 continue;
 
             Vector2 normal = preventOverlap(other);
-            if (normal != null) {
-                setMaxSpeed(walkingSpeed);
+            if (normal != null)
                 accelerateAtAngle(normal.angleDeg());
-            }
+        }
+    }
+
+
+    private void wander() {
+        if (MathUtils.random() < 0.1f) {
+            float random_angle = MathUtils.random(-10f, 10f);
+            accelerateAtAngle(getMotionAngle() + random_angle);
         }
     }
 }

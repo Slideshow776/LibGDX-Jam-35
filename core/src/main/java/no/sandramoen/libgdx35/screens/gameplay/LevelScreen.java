@@ -50,14 +50,14 @@ public class LevelScreen extends BaseScreen {
         grass = new Grass(mainStage);
 
         water = new Water(
-            new Vector2(0, 5.5f),
+            new Vector2(0, 11f),
             new Vector2(BaseGame.WORLD_WIDTH, 3),
             mainStage
         );
 
         bridge = new Bridge(
-            new Vector2(3, 5f),
-            new Vector2(1, 4),
+            new Vector2(3, 10.5f),
+            new Vector2(2, 4),
             mainStage
         );
 
@@ -76,7 +76,8 @@ public class LevelScreen extends BaseScreen {
         initialize_gui();
         //GameUtils.playLoopingMusic(AssetLoader.levelMusic);
 
-        winArea = new WinArea(new Vector2(0, BaseGame.WORLD_HEIGHT - 0.5f), new Vector2(BaseGame.WORLD_WIDTH, 0.5f), mainStage);
+        winArea = new WinArea(new Vector2(0, BaseGame.WORLD_HEIGHT - 1f), new Vector2(BaseGame.WORLD_WIDTH, 1f), mainStage);
+        winArea.setDebug(true);
         overlay = new Overlay(mainStage);
     }
 
@@ -114,13 +115,7 @@ public class LevelScreen extends BaseScreen {
     private void update_sheep(float delta) {
         // set avoidance behaviour
         for (int i = 0; i < sheep.size; i++) {
-            Array<Sheep> other_sheep = new Array<Sheep>();
-            for (Sheep other : this.sheep) {
-                if (sheep.get(i) != other) {
-                    other_sheep.add(other);
-                }
-            }
-            sheep.get(i).updateBehaviour(player.get_center_position(), other_sheep);
+            sheep.get(i).updateBehaviour(player.get_center_position(), sheep);
 
             // collision checks
 

@@ -205,7 +205,7 @@ public class BaseActor extends Group {
         setOrigin(w / 2, h / 2);
 
         if (boundaryPolygon == null)
-            setBoundaryRectangle();
+            setBoundaryRectangle(1f);
     }
 
     public void loadImage(String name) {
@@ -380,9 +380,9 @@ public class BaseActor extends Group {
 
 
     // Collision detection --------------------------------------------------------------------------------------
-    public void setBoundaryRectangle() {
-        float w = getWidth();
-        float h = getHeight();
+    public void setBoundaryRectangle(float scale) {
+        float w = getWidth() * scale;
+        float h = getHeight() * scale;
         float[] vertices = {0, 0, w, 0, w, h, 0, h};
         boundaryPolygon = new Polygon(vertices);
     }

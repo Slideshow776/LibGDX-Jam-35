@@ -9,6 +9,6 @@ public class WinArea extends BaseActor {
     public WinArea(Vector2 position, Vector2 size, Stage stage) {
         super(position.x, position.y, stage);
         setSize(size.x, size.y);
-        setBoundaryRectangle();
+        setBoundaryRectangle(1f);
     }
 }

@@ -16,7 +16,7 @@ public class Player extends BaseActor {
 
     public Vector2 touch_position = new Vector2();
 
-    private float movementSpeed = 12f;
+    private float movementSpeed = 9f;
     private float movementAcceleration = movementSpeed * 6f;
 
 
@@ -26,11 +26,12 @@ public class Player extends BaseActor {
         setColor(new Color(0xec6827FF));
 
         // body
-        setSize(0.1f, 0.2f);
+        setSize(0.105f, 0.2f);
+        setSize(getWidth(), getWidth() * 2f);
         centerAtPosition(position.x, position.y);
         touch_position.set(getX(), getY());
         setOrigin(Align.center);
-        setBoundaryPolygon(8, 0.9f);
+        setBoundaryRectangle(0.9f);
 
         setWorldBounds(BaseGame.WORLD_WIDTH + 0.5f, BaseGame.WORLD_HEIGHT);
 
