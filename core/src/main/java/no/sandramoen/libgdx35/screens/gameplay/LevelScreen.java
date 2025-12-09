@@ -28,7 +28,7 @@ public class LevelScreen extends BaseScreen {
     private BaseActor overlay;
     private Grass grass;
     private Water water;
-    private Bridge bridge;
+    private Array<Bridge> bridges;
     private Player player;
     private Array<Sheep> sheep;
     private WinArea winArea;
@@ -50,24 +50,25 @@ public class LevelScreen extends BaseScreen {
         grass = new Grass(mainStage);
 
         water = new Water(
-            new Vector2(0, 11f),
+            new Vector2(0, 11.5f),
             new Vector2(BaseGame.WORLD_WIDTH, 3),
             mainStage
         );
 
-        bridge = new Bridge(
-            new Vector2(3, 10.5f),
+        bridges = new Array<Bridge>();
+        bridges.add(new Bridge(
+            new Vector2(3, 11f),
             new Vector2(2, 4),
             mainStage
-        );
+        ));
 
         sheep = new Array<Sheep>();
         for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(4, 2), mainStage));
+            sheep.add(new Sheep(new Vector2(12, 7.5f), mainStage));
         for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(5, 1.5f), mainStage));
+            sheep.add(new Sheep(new Vector2(10, 2f), mainStage));
         for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(3, 1.75f), mainStage));
+            sheep.add(new Sheep(new Vector2(3, 4f), mainStage));
         for (int i = 0; i < NUM_SHEEP / 4; i++)
             sheep.add(new Sheep(new Vector2(2, 1.25f), mainStage));
 
@@ -76,7 +77,7 @@ public class LevelScreen extends BaseScreen {
         initialize_gui();
         //GameUtils.playLoopingMusic(AssetLoader.levelMusic);
 
-        winArea = new WinArea(new Vector2(0, BaseGame.WORLD_HEIGHT - 1f), new Vector2(BaseGame.WORLD_WIDTH, 1f), mainStage);
+        winArea = new WinArea(new Vector2(0, BaseGame.WORLD_HEIGHT - 0.5f), new Vector2(BaseGame.WORLD_WIDTH, 1f), mainStage);
         winArea.setDebug(true);
         overlay = new Overlay(mainStage);
     }
@@ -120,22 +121,24 @@ public class LevelScreen extends BaseScreen {
             // collision checks
 
             // guard rails
-            Vector2 temp = sheep.get(i).preventOverlap(bridge.left_rail);
-            if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
-            temp = sheep.get(i).preventOverlap(bridge.right_rail);
-            if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
+            for (Bridge bridge : bridges) {
+                Vector2 temp = sheep.get(i).preventOverlap(bridge.left_rail);
+                if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
+                temp = sheep.get(i).preventOverlap(bridge.right_rail);
+                if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
 
-            if (sheep.get(i).overlaps(water) && !sheep.get(i).overlaps(bridge)) { // death check
-                sheep.get(i).die();
-                sheep.removeIndex(i);
-                sheep_killed++;
-                kill_label.setText(String.valueOf(sheep_killed));
-            } else if (sheep.get(i).overlaps(winArea)) { // win check
-                sheep.get(i).herded();
-                sheep.removeIndex(i);
-                sheep_herded++;
-                score_label.setText(String.valueOf(sheep_herded));
-                checkWinCondition();
+                if (sheep.get(i).overlaps(water) && !sheep.get(i).overlaps(bridge)) { // death check
+                    sheep.get(i).die();
+                    sheep.removeIndex(i);
+                    sheep_killed++;
+                    kill_label.setText(String.valueOf(sheep_killed));
+                } else if (sheep.get(i).overlaps(winArea)) { // win check
+                    sheep.get(i).herded();
+                    sheep.removeIndex(i);
+                    sheep_herded++;
+                    score_label.setText(String.valueOf(sheep_herded));
+                    checkWinCondition();
+                }
             }
         }
     }

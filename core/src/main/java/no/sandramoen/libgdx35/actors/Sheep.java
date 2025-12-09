@@ -13,7 +13,7 @@ import no.sandramoen.libgdx35.utils.BaseGame;
 public class Sheep extends BaseActor {
 
     private final float BORDER_DISTANCE_THRESHOLD = 0.5f;
-    private final float PLAYER_DISTANCE_THRESHOLD = 7;
+    private final float PLAYER_DISTANCE_THRESHOLD = 5;
     private final float ALIGNMENT_THRESHOLD = 1.0f;
     private final float COHESION_THRESHOLD = 1.2f;
 
