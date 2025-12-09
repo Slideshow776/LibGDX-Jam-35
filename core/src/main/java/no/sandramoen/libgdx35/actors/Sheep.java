@@ -109,7 +109,7 @@ public class Sheep extends BaseActor {
 
 
     private void avoidPlayer(Vector2 player_position) {
-        Vector2 away_from_player = get_center_position().cpy().sub(player_position);
+        Vector2 away_from_player = get_center_position().sub(player_position);
         float distance_to_player = away_from_player.len();
 
         if (distance_to_player < PLAYER_DISTANCE_THRESHOLD) {
@@ -127,7 +127,8 @@ public class Sheep extends BaseActor {
             if (other == this)
                 continue;
 
-            float distance = other.get_center_position().dst(get_center_position());
+            float distance = Vector2.dst(other.getX(Align.center), other.getY(Align.center),
+                getX(Align.center), getY(Align.center));
             if (distance < ALIGNMENT_THRESHOLD) {
                 alignment.add(other.velocityVec);
                 alignmentCount++;
@@ -149,17 +150,19 @@ public class Sheep extends BaseActor {
             if (other == this)
                 continue;
 
-            float distance = other.get_center_position().dst(get_center_position());
+
+            float distance = Vector2.dst(other.getX(Align.center), other.getY(Align.center),
+                getX(Align.center), getY(Align.center));
             if (distance < COHESION_THRESHOLD) {
-                cohesion.add(other.get_center_position());
+                cohesion.add(other.getX(Align.center), other.getY(Align.center));
                 cohesionCount++;
             }
         }
 
         if (cohesionCount > 0) {
             cohesion.scl(1f / cohesionCount);
-            Vector2 toCenter = cohesion.sub(get_center_position());
-            accelerateAtAngle(toCenter.angleDeg());
+            cohesion.sub(getX(Align.center), getY(Align.center));
+            accelerateAtAngle(cohesion.angleDeg());
         }
     }
 
