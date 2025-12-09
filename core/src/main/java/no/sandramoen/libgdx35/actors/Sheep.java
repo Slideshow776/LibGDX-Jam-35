@@ -15,12 +15,12 @@ import no.sandramoen.libgdx35.utils.BaseGame;
 public class Sheep extends BaseActor {
 
     private final float BORDER_DISTANCE_THRESHOLD = 0.5f;
-    private final float PLAYER_DISTANCE_THRESHOLD = 5;
+    private final float PLAYER_DISTANCE_THRESHOLD = 4;
     private final float ALIGNMENT_THRESHOLD = 1.0f;
     private final float COHESION_THRESHOLD = 1.2f;
 
-    private float walkingSpeed = 0.125f + MathUtils.random(-0.05f, 0.05f);
-    private float runningSpeed = 0.5f + MathUtils.random(-0.05f, 0.05f);
+    private float walkingSpeed = 0.125f + MathUtils.random(-0.1f, 0.1f);
+    private float runningSpeed = 0.5f + MathUtils.random(-0.1f, 0.175f);
     private float movementAcceleration = runningSpeed * 0.75f + MathUtils.random(-0.05f, 0.05f);
     private static final FloatArray results = new FloatArray(256);
 

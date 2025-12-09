@@ -16,6 +16,6 @@ public class Grass extends BaseActor {
         setSize(BaseGame.WORLD_WIDTH + 2, BaseGame.WORLD_HEIGHT + 2);
         setPosition(-1, -1);
 
-        setColor(new Color(0x6c9381FF));
+        setColor(new Color(0x5e8171FF));
     }
 }

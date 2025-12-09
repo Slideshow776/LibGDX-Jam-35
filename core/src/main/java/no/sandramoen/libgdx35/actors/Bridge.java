@@ -18,6 +18,7 @@ public class Bridge extends BaseActor {
         setColor(new Color(0xdbb88dFF));
 
         setBoundaryRectangle(1f);
+        setDebug(true);
 
         // guard rails
         left_rail = new BaseActor(getX(), getY(), stage);

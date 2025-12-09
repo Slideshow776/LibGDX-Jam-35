@@ -103,7 +103,7 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
-        update_sheep(delta);
+        update_sheep();
     }
 
 
@@ -131,33 +131,60 @@ public class LevelScreen extends BaseScreen {
     }
 
 
-    private void update_sheep(float delta) {
+    private void update_sheep() {
         // set avoidance behaviour
+        float player_distance = 100f;
         for (int i = 0; i < sheep.size; i++) {
             sheep.get(i).updateBehaviour(player.get_center_position(), sheep, quad);
         }
         // collision checks
         for (int i = 0; i < sheep.size; i++) {
             // guard rails
+            sheep.get(i).updateBehaviour(player.get_center_position(), sheep, quad);
+
+            if (sheep.get(i).get_center_position().dst(player.get_center_position()) < player_distance)
+                player_distance = sheep.get(i).get_center_position().dst(player.get_center_position());
+
+            // collision checks
+            boolean is_on_a_bridge = false;
+
             for (Bridge bridge : bridges) {
+                // left guard-rail
                 Vector2 temp = sheep.get(i).preventOverlap(bridge.left_rail);
                 if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
+
+                // right guard-rail
                 temp = sheep.get(i).preventOverlap(bridge.right_rail);
                 if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
 
-                if (sheep.get(i).overlaps(water) && !sheep.get(i).overlaps(bridge)) { // death check
-                    sheep.get(i).die();
-                    sheep.removeIndex(i);
-                    sheep_killed++;
-                    kill_label.setText(String.valueOf(sheep_killed));
-                } else if (sheep.get(i).overlaps(winArea)) { // win check
-                    sheep.get(i).herded();
-                    sheep.removeIndex(i);
-                    sheep_herded++;
-                    score_label.setText(String.valueOf(sheep_herded));
-                    checkWinCondition();
-                }
+                if (sheep.get(i).overlaps(bridge))
+                    is_on_a_bridge = true;
+
             }
+
+            if (sheep.get(i).overlaps(water) && !is_on_a_bridge) { // death check
+                sheep.get(i).die();
+                sheep.removeIndex(i);
+                sheep_killed++;
+                kill_label.setText(String.valueOf(sheep_killed));
+            }
+
+            if (sheep.get(i).overlaps(winArea)) { // win check
+                sheep.get(i).herded();
+                sheep.removeIndex(i);
+                sheep_herded++;
+                score_label.setText(String.valueOf(sheep_herded));
+                checkWinCondition();
+            }
+        }
+
+        System.out.println(player_distance);
+
+        if (player_distance < 100) {
+            float volume = MathUtils.clamp(BaseGame.soundVolume * (0.5f / player_distance * 0.7f),0f, BaseGame.soundVolume);
+            AssetLoader.herdMusic.setVolume(volume);
+        } else {
+            AssetLoader.herdMusic.setVolume(0f);
         }
         if(sheep_killed + sheep_herded > 0) {
             quad.reset();

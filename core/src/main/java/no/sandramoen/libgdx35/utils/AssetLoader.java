@@ -25,17 +25,12 @@ public class AssetLoader implements AssetErrorListener {
     public static String shockwaveShader;
     public static String backgroundShader;
 
-    public static Sound new_letters_sound;
-    public static Sound move_sound;
-    public static Sound error_sound;
-    public static Sound game_over_sound;
-    public static Sound game_start_sound;
-    public static Sound key_sound;
-    public static Sound locked_sound;
-    public static Sound door_open_sound;
+    //public static Sound herdSound
 
     public static Array<Music> music;
     //public static Music levelMusic;
+    public static Music ambianceMusic;
+    public static Music herdMusic;
 
 
     static {
@@ -70,7 +65,8 @@ public class AssetLoader implements AssetErrorListener {
         no.sandramoen.libgdx35.utils.BaseGame.assetManager.load("images/included/packed/images.pack.atlas", TextureAtlas.class);
 
         // music
-        //BaseGame.assetManager.load("audio/music/744138__thelastoneonearth__epic-middle-east-theme.ogg", Music.class);
+        BaseGame.assetManager.load("audio/music/697045__gadesound__ambgras-tascamx8_meadow_kl_gades_tascamx8-0001.wav", Music.class);
+        BaseGame.assetManager.load("audio/music/herdAmbiance.wav", Music.class);
 
         // sounds
         //no.sandramoen.libgdx35.utils.BaseGame.assetManager.load("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
@@ -99,9 +95,11 @@ public class AssetLoader implements AssetErrorListener {
         textureAtlas = no.sandramoen.libgdx35.utils.BaseGame.assetManager.get("images/included/packed/images.pack.atlas");
 
         // music
-        //music = new Array();
+        music = new Array();
         //levelMusic = BaseGame.assetManager.get("audio/music/744138__thelastoneonearth__epic-middle-east-theme.ogg", Music.class);
         //music.add(levelMusic);
+        ambianceMusic = BaseGame.assetManager.get("audio/music/697045__gadesound__ambgras-tascamx8_meadow_kl_gades_tascamx8-0001.wav", Music.class);
+        herdMusic = BaseGame.assetManager.get("audio/music/herdAmbiance.wav", Music.class);
 
         // sounds
         //new_letters_sound = no.sandramoen.libgdx35.utils.BaseGame.assetManager.get("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
