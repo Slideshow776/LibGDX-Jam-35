@@ -5,9 +5,11 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.CpuSpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -18,10 +20,13 @@ public abstract class BaseScreen implements Screen, InputProcessor {
     protected Table uiTable;
     protected ShapeRenderer shape_renderer;
     private boolean pause;
+    protected CpuSpriteBatch batch;
 
     public BaseScreen() {
-        mainStage = new Stage();
-        mainStage.setViewport(new ExtendViewport(no.sandramoen.libgdx35.utils.BaseGame.WORLD_WIDTH - 1f, no.sandramoen.libgdx35.utils.BaseGame.WORLD_HEIGHT - 1f));
+        batch = new CpuSpriteBatch(4000);
+        mainStage = new Stage(new ExtendViewport(no.sandramoen.libgdx35.utils.BaseGame.WORLD_WIDTH - 1f, no.sandramoen.libgdx35.utils.BaseGame.WORLD_HEIGHT - 1f)
+            , batch
+        );
         mainStage.getCamera().position.add(0.5f, 0.5f, 0f);
 
         uiTable = new Table();
@@ -48,8 +53,7 @@ public abstract class BaseScreen implements Screen, InputProcessor {
             update(delta);
         }
 
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        ScreenUtils.clear(0f, 0f, 0f, 1f);
 
         mainStage.getViewport().apply();
         mainStage.draw();
@@ -57,6 +61,8 @@ public abstract class BaseScreen implements Screen, InputProcessor {
         uiStage.act();
         uiStage.getViewport().apply();
         uiStage.draw();
+
+        Gdx.graphics.setTitle(Gdx.graphics.getFramesPerSecond() + " FPS");
     }
 
 

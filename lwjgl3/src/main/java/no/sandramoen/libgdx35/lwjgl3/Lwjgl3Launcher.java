@@ -36,7 +36,8 @@ public class Lwjgl3Launcher {
         //configuration.setWindowedMode(640, 480);
         //// You can change these files; they are in lwjgl3/src/main/resources/.
 
-        configuration.useVsync(true);
+        configuration.setForegroundFPS(0);
+        configuration.useVsync(false);
         configuration.setWindowIcon("images/excluded/icon_16x16.png", "images/excluded/icon_32x32.png", "images/excluded/icon_64x64.png");
 
         boolean isFullscreen = false;
