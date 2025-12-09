@@ -33,7 +33,7 @@ public class LevelScreen extends BaseScreen {
     private Array<Sheep> sheep;
     private WinArea winArea;
 
-    private final int NUM_SHEEP = 48;
+    private final int NUM_SHEEP = 480;
     private int sheep_killed = 0;
     private int sheep_herded = 0;
 
@@ -120,13 +120,15 @@ public class LevelScreen extends BaseScreen {
                     other_sheep.add(other);
                 }
             }
-            sheep.get(i).updateAvoidanceBehaviour(delta, player.get_center_position(), other_sheep);
+            sheep.get(i).updateBehaviour(player.get_center_position(), other_sheep);
 
             // collision checks
 
             // guard rails
-            sheep.get(i).preventOverlap(bridge.left_rail);
-            sheep.get(i).preventOverlap(bridge.right_rail);
+            Vector2 temp = sheep.get(i).preventOverlap(bridge.left_rail);
+            if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
+            temp = sheep.get(i).preventOverlap(bridge.right_rail);
+            if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
 
             if (sheep.get(i).overlaps(water) && !sheep.get(i).overlaps(bridge)) { // death check
                 sheep.get(i).die();
@@ -182,6 +184,7 @@ public class LevelScreen extends BaseScreen {
         herd_table.add(score_image)
             .width(Gdx.graphics.getWidth() * 0.025f)
             .height(Gdx.graphics.getHeight() * 0.04f)
+            .padTop(Gdx.graphics.getHeight() * .02f)
         ;
         herd_table.add(score_label)
             .top()
@@ -196,6 +199,7 @@ public class LevelScreen extends BaseScreen {
         kill_table.add(kill_image)
             .width(Gdx.graphics.getWidth() * 0.025f)
             .height(Gdx.graphics.getHeight() * 0.04f)
+            .padTop(Gdx.graphics.getHeight() * .02f)
         ;
         kill_table.add(kill_label)
             .top()

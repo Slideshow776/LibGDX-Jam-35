@@ -26,7 +26,7 @@ public class Player extends BaseActor {
         setColor(new Color(0xec6827FF));
 
         // body
-        setSize(0.25f, 0.25f);
+        setSize(0.1f, 0.2f);
         centerAtPosition(position.x, position.y);
         touch_position.set(getX(), getY());
         setOrigin(Align.center);
@@ -46,7 +46,7 @@ public class Player extends BaseActor {
         super.act(delta);
 
         sampleTouch();
-        pollKeyboard();
+        //pollKeyboard();
 
         applyPhysics(delta);
         boundToWorld();
@@ -65,6 +65,7 @@ public class Player extends BaseActor {
             Vector2 direction = touch_position.cpy().sub(get_center_position());
             float angle_to_touch = direction.angleDeg();
             accelerateAtAngle(angle_to_touch);
+            setRotation(getMotionAngle() - 90);
         }
     }
 

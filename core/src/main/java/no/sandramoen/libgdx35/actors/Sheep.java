@@ -12,8 +12,10 @@ import no.sandramoen.libgdx35.utils.BaseGame;
 
 public class Sheep extends BaseActor {
 
-    private final float PLAYER_DISTANCE_THRESHOLD = 3;
     private final float BORDER_DISTANCE_THRESHOLD = 0.5f;
+    private final float PLAYER_DISTANCE_THRESHOLD = 5;
+    private final float ALIGNMENT_THRESHOLD = 2.5f;
+    private final float COHESION_THRESHOLD = 3.0f;
 
     private float walkingSpeed = 0.125f + MathUtils.random(-0.05f, 0.05f);
     private float runningSpeed = 0.75f + MathUtils.random(-0.05f, 0.05f);
@@ -27,8 +29,8 @@ public class Sheep extends BaseActor {
 
         // body
         setSize(
-            0.25f + MathUtils.random(-0.05f, 0.05f),
-            0.25f + MathUtils.random(-0.05f, 0.05f)
+            0.1f + MathUtils.random(-0.05f, 0.05f),
+            0.2f + MathUtils.random(-0.05f, 0.05f)
         );
         centerAtPosition(position.x, position.y);
         setOrigin(Align.center);
@@ -55,52 +57,122 @@ public class Sheep extends BaseActor {
     }
 
 
-    public void updateAvoidanceBehaviour(float delta, Vector2 player_position, Array<Sheep> sheep) {
-        setMaxSpeed(runningSpeed);
-        Vector2 away_from_player = get_center_position().cpy().sub(player_position);
-        float distance_to_player = away_from_player.len();
-
-        // avoid borders
-        if (get_center_position().x < BORDER_DISTANCE_THRESHOLD) { // left border
-            accelerateAtAngle(0);
-            return;
-        } else if (get_center_position().x > BaseGame.WORLD_WIDTH - BORDER_DISTANCE_THRESHOLD) { // right border
-            accelerateAtAngle(180);
-            return;
-        } else if (get_center_position().y < BORDER_DISTANCE_THRESHOLD) { // bottom border
-            accelerateAtAngle(90);
-            return;
-        }/* else if (get_center_position().y > BaseGame.WORLD_HEIGHT - BORDER_DISTANCE_THRESHOLD) { // top border
-            accelerateAtAngle(270);
-            return;
-        }*/
-
-        // avoid player
-        if (distance_to_player < PLAYER_DISTANCE_THRESHOLD) {
-            accelerateAtAngle(away_from_player.angleDeg());
-        }
-
-        // avoid other sheep
-        for (int i = 0; i < sheep.size; i++) {
-            if (sheep.get(i) == this)
-                continue;
-
-            Vector2 collision_normal_vector = preventOverlap(sheep.get(i));
-            if (collision_normal_vector != null) {
-                setMaxSpeed(walkingSpeed);
-                sheep.get(i).accelerateAtAngle(MathUtils.random(0f, 360f));
-            }
-        }
-    }
-
-
     public void die() {
         isCollisionEnabled = false;
         remove();
     }
 
+
     public void herded() {
         isCollisionEnabled = false;
         remove();
+    }
+
+
+    public void updateBehaviour(Vector2 player_position, Array<Sheep> sheep) {
+        boolean isPlayerClose = get_center_position().dst(player_position) < PLAYER_DISTANCE_THRESHOLD;
+        setMaxSpeed(isPlayerClose ? runningSpeed : walkingSpeed);
+
+        avoidBorders();
+        avoidPlayer(player_position);
+
+        if (isPlayerClose) {
+            applyAlignment(sheep);
+            applyCohesion(sheep);
+        }
+        applySeparation(sheep);
+
+        setRotation(getMotionAngle() - 90);
+    }
+
+
+    private void avoidBorders() {
+        if (get_center_position().x < BORDER_DISTANCE_THRESHOLD) { // left border
+            accelerateAtAngle(0);
+            setRotation(getMotionAngle() - 90);
+            return;
+        } else if (get_center_position().x > BaseGame.WORLD_WIDTH - BORDER_DISTANCE_THRESHOLD) { // right border
+            accelerateAtAngle(180);
+            setRotation(getMotionAngle() - 90);
+            return;
+        } else if (get_center_position().y < BORDER_DISTANCE_THRESHOLD) { // bottom border
+            accelerateAtAngle(90);
+            setRotation(getMotionAngle() - 90);
+            return;
+        }/* else if (get_center_position().y > BaseGame.WORLD_HEIGHT - BORDER_DISTANCE_THRESHOLD) { // top border
+            accelerateAtAngle(270);
+            setRotation(getMotionAngle() - 90);
+            return;
+        }*/
+    }
+
+
+    private void avoidPlayer(Vector2 player_position) {
+        Vector2 away_from_player = get_center_position().cpy().sub(player_position);
+        float distance_to_player = away_from_player.len();
+
+        if (distance_to_player < PLAYER_DISTANCE_THRESHOLD) {
+            accelerateAtAngle(away_from_player.angleDeg());
+            setRotation(getMotionAngle() - 90);
+        }
+    }
+
+
+    private void applyAlignment(Array<Sheep> sheep) {
+        Vector2 alignment = new Vector2();
+        int alignmentCount = 0;
+
+        for (Sheep other : sheep) {
+            if (other == this)
+                continue;
+
+            float distance = other.get_center_position().dst(get_center_position());
+            if (distance < ALIGNMENT_THRESHOLD) {
+                alignment.add(other.velocityVec);
+                alignmentCount++;
+            }
+        }
+
+        if (alignmentCount > 0) {
+            alignment.scl(1f / alignmentCount);
+            accelerateAtAngle(alignment.angleDeg());
+        }
+    }
+
+
+    private void applyCohesion(Array<Sheep> sheep) {
+        Vector2 cohesion = new Vector2();
+        int cohesionCount = 0;
+
+        for (Sheep other : sheep) {
+            if (other == this)
+                continue;
+
+            float distance = other.get_center_position().dst(get_center_position());
+            if (distance < COHESION_THRESHOLD) {
+                cohesion.add(other.get_center_position());
+                cohesionCount++;
+            }
+        }
+
+        if (cohesionCount > 0) {
+            cohesion.scl(1f / cohesionCount);
+            Vector2 toCenter = cohesion.sub(get_center_position());
+            accelerateAtAngle(toCenter.angleDeg());
+        }
+    }
+
+
+    private void applySeparation(Array<Sheep> sheep) {
+        for (Sheep other : sheep) {
+            if (other == this)
+                continue;
+
+            Vector2 normal = preventOverlap(other);
+            if (normal != null) {
+                setMaxSpeed(walkingSpeed);
+                accelerateAtAngle(normal.angleDeg());
+            }
+        }
     }
 }

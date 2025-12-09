@@ -32,7 +32,7 @@ public class BaseActor extends Group {
     private float animationTime = 0f;
     private boolean animationPaused = false;
 
-    private Vector2 velocityVec = new Vector2(0f, 0f);
+    protected Vector2 velocityVec = new Vector2(0f, 0f);
     private Vector2 accelerationVec = new Vector2(0f, 0f);
     private float acceleration = 0f;
     private float maxSpeed = 1000f;
