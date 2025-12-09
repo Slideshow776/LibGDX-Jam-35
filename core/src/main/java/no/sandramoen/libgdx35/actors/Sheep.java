@@ -18,7 +18,7 @@ public class Sheep extends BaseActor {
     private final float COHESION_THRESHOLD = 1.2f;
 
     private float walkingSpeed = 0.125f + MathUtils.random(-0.05f, 0.05f);
-    private float runningSpeed = 0.5f + MathUtils.random(-0.05f, 0.05f);
+    private float runningSpeed = 0.5f + MathUtils.random(-0.05f, 0.1f);
     private float movementAcceleration = runningSpeed * 0.75f + MathUtils.random(-0.05f, 0.05f);
 
 
