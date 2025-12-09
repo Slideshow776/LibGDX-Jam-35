@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
+import com.badlogic.gdx.utils.FloatArray;
+import com.badlogic.gdx.utils.QuadTreeFloat;
 import no.sandramoen.libgdx35.utils.BaseActor;
 import no.sandramoen.libgdx35.utils.BaseGame;
 
@@ -20,6 +22,7 @@ public class Sheep extends BaseActor {
     private float walkingSpeed = 0.125f + MathUtils.random(-0.05f, 0.05f);
     private float runningSpeed = 0.5f + MathUtils.random(-0.05f, 0.05f);
     private float movementAcceleration = runningSpeed * 0.75f + MathUtils.random(-0.05f, 0.05f);
+    private static final FloatArray results = new FloatArray(256);
 
 
     public Sheep(Vector2 position, Stage stage) {
@@ -71,7 +74,7 @@ public class Sheep extends BaseActor {
     }
 
 
-    public void updateBehaviour(Vector2 player_position, Array<Sheep> sheep) {
+    public void updateBehaviour(Vector2 player_position, Array<Sheep> sheep, QuadTreeFloat quad) {
         boolean isPlayerClose = get_center_position().dst(player_position) < PLAYER_DISTANCE_THRESHOLD;
         setMaxSpeed(isPlayerClose ? runningSpeed : walkingSpeed);
 
@@ -79,12 +82,12 @@ public class Sheep extends BaseActor {
         avoidPlayer(player_position);
 
         if (isPlayerClose) {
-            applyAlignment(sheep);
-            applyCohesion(sheep);
+            applyAlignment(sheep, quad);
+            applyCohesion(sheep, quad);
         } else {
             wander();
         }
-        applySeparation(sheep);
+        applySeparation(sheep, quad);
 
         setRotation(getMotionAngle() - 90);
     }
@@ -119,19 +122,19 @@ public class Sheep extends BaseActor {
     }
 
 
-    private void applyAlignment(Array<Sheep> sheep) {
+    private void applyAlignment(Array<Sheep> sheep, QuadTreeFloat quad) {
         Vector2 alignment = new Vector2();
         int alignmentCount = 0;
 
-        for (Sheep other : sheep) {
+        results.clear();
+        quad.query(getX(Align.center), getY(Align.center), ALIGNMENT_THRESHOLD, results);
+        for (int i = 0, n = results.size; i < n; i+= 4) {
+            int idx = (int)results.get(i);
+            Sheep other = sheep.get(idx);
             if (other == this)
                 continue;
-
-            float distance = other.get_center_position().dst(get_center_position());
-            if (distance < ALIGNMENT_THRESHOLD) {
-                alignment.add(other.velocityVec);
-                alignmentCount++;
-            }
+            alignment.add(other.velocityVec);
+            alignmentCount++;
         }
 
         if (alignmentCount > 0) {
@@ -141,19 +144,18 @@ public class Sheep extends BaseActor {
     }
 
 
-    private void applyCohesion(Array<Sheep> sheep) {
+    private void applyCohesion(Array<Sheep> sheep, QuadTreeFloat quad) {
         Vector2 cohesion = new Vector2();
         int cohesionCount = 0;
-
-        for (Sheep other : sheep) {
+        results.clear();
+        quad.query(getX(Align.center), getY(Align.center), COHESION_THRESHOLD, results);
+        for (int i = 0, n = results.size; i < n; i+= 4) {
+            int idx = (int)results.get(i);
+            Sheep other = sheep.get(idx);
             if (other == this)
                 continue;
-
-            float distance = other.get_center_position().dst(get_center_position());
-            if (distance < COHESION_THRESHOLD) {
-                cohesion.add(other.get_center_position());
-                cohesionCount++;
-            }
+            cohesion.add(other.get_center_position());
+            cohesionCount++;
         }
 
         if (cohesionCount > 0) {
@@ -164,11 +166,14 @@ public class Sheep extends BaseActor {
     }
 
 
-    private void applySeparation(Array<Sheep> sheep) {
-        for (Sheep other : sheep) {
+    private void applySeparation(Array<Sheep> sheep, QuadTreeFloat quad) {
+        results.clear();
+        quad.query(getX(Align.center), getY(Align.center), getHeight(), results);
+        for (int i = 0, n = results.size; i < n; i+= 4) {
+            int idx = (int)results.get(i);
+            Sheep other = sheep.get(idx);
             if (other == this)
                 continue;
-
             Vector2 normal = preventOverlap(other);
             if (normal != null)
                 accelerateAtAngle(normal.angleDeg());

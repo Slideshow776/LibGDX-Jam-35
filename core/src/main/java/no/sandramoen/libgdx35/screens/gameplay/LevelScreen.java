@@ -3,11 +3,13 @@ package no.sandramoen.libgdx35.screens.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.QuadTreeFloat;
 import com.github.tommyettinger.textra.TextraLabel;
 
 import no.sandramoen.libgdx35.actors.Bridge;
@@ -30,10 +32,12 @@ public class LevelScreen extends BaseScreen {
     private Water water;
     private Array<Bridge> bridges;
     private Player player;
+    private QuadTreeFloat quad;
     private Array<Sheep> sheep;
     private WinArea winArea;
 
     private final int NUM_SHEEP = 480;
+    private final float VARIANCE = 0.25f;
     private int sheep_killed = 0;
     private int sheep_herded = 0;
 
@@ -62,16 +66,30 @@ public class LevelScreen extends BaseScreen {
             mainStage
         ));
 
-        sheep = new Array<Sheep>();
-        for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(12, 7.5f), mainStage));
-        for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(10, 2f), mainStage));
-        for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(3, 4f), mainStage));
-        for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(2, 1.25f), mainStage));
+        quad = new QuadTreeFloat(16, 8);
 
+        sheep = new Array<Sheep>();
+        for (int i = 0; i < NUM_SHEEP / 4; i++) {
+            Vector2 sp = new Vector2(12f + MathUtils.randomTriangular(-VARIANCE, VARIANCE), 7.5f + MathUtils.randomTriangular(-VARIANCE, VARIANCE));
+            quad.add(sheep.size, sp.x, sp.y);
+            sheep.add(new Sheep(sp, mainStage));
+        }
+        for (int i = 0; i < NUM_SHEEP / 4; i++) {
+            Vector2 sp = new Vector2(10f + MathUtils.randomTriangular(-VARIANCE, VARIANCE), 2.5f + MathUtils.randomTriangular(-VARIANCE, VARIANCE));
+            quad.add(sheep.size, sp.x, sp.y);
+            sheep.add(new Sheep(sp, mainStage));
+        }
+        for (int i = 0; i < NUM_SHEEP / 4; i++) {
+            Vector2 sp = new Vector2(3f + MathUtils.randomTriangular(-VARIANCE, VARIANCE), 4f + MathUtils.randomTriangular(-VARIANCE, VARIANCE));
+            quad.add(sheep.size, sp.x, sp.y);
+            sheep.add(new Sheep(sp, mainStage));
+
+        }
+        for (int i = 0; i < NUM_SHEEP / 4; i++) {
+            Vector2 sp = new Vector2(2 + MathUtils.randomTriangular(-VARIANCE, VARIANCE), 1.5f + MathUtils.randomTriangular(-VARIANCE, VARIANCE));
+            quad.add(sheep.size, sp.x, sp.y);
+            sheep.add(new Sheep(sp, mainStage));
+        }
         player = new Player(new Vector2(14, 2), mainStage);
 
         initialize_gui();
@@ -116,10 +134,10 @@ public class LevelScreen extends BaseScreen {
     private void update_sheep(float delta) {
         // set avoidance behaviour
         for (int i = 0; i < sheep.size; i++) {
-            sheep.get(i).updateBehaviour(player.get_center_position(), sheep);
-
-            // collision checks
-
+            sheep.get(i).updateBehaviour(player.get_center_position(), sheep, quad);
+        }
+        // collision checks
+        for (int i = 0; i < sheep.size; i++) {
             // guard rails
             for (Bridge bridge : bridges) {
                 Vector2 temp = sheep.get(i).preventOverlap(bridge.left_rail);
@@ -139,6 +157,13 @@ public class LevelScreen extends BaseScreen {
                     score_label.setText(String.valueOf(sheep_herded));
                     checkWinCondition();
                 }
+            }
+        }
+        if(sheep_killed + sheep_herded > 0) {
+            quad.reset();
+            for (int i = 0, n = sheep.size; i < n; i++) {
+                Sheep s = sheep.get(i);
+                quad.add(i, s.getX(Align.center), s.getY(Align.center));
             }
         }
     }
