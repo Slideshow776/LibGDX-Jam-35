@@ -34,6 +34,7 @@ public class LevelScreen extends BaseScreen {
     private Array<Sheep> sheep;
     private WinArea winArea;
 
+    private boolean is_game_over = false;
     private final int NUM_SHEEP = 480;
     private final float VARIANCE = 0.25f;
     private int sheep_killed = 0;
@@ -52,8 +53,13 @@ public class LevelScreen extends BaseScreen {
         // audio
         AssetLoader.ambianceMusic.setLooping(true);
         AssetLoader.ambianceMusic.setPosition(MathUtils.random(0f, 40f));
-        AssetLoader.ambianceMusic.setVolume(BaseGame.musicVolume * 1f);
+        AssetLoader.ambianceMusic.setVolume(BaseGame.musicVolume);
         AssetLoader.ambianceMusic.play();
+
+        AssetLoader.levelMusic.setLooping(true);
+        AssetLoader.levelMusic.setPosition(MathUtils.random(0f, 40f));
+        AssetLoader.levelMusic.setVolume(BaseGame.musicVolume);
+        AssetLoader.levelMusic.play();
 
         AssetLoader.herdMusic.setLooping(true);
         AssetLoader.herdMusic.setPosition(MathUtils.random(0f, 40f));
@@ -97,14 +103,28 @@ public class LevelScreen extends BaseScreen {
         //GameUtils.playLoopingMusic(AssetLoader.levelMusic);
 
         winArea = new WinArea(new Vector2(0, BaseGame.WORLD_HEIGHT - 0.5f), new Vector2(BaseGame.WORLD_WIDTH, 1f), mainStage);
-        winArea.setDebug(true);
         overlay = new Overlay(mainStage);
     }
 
 
     @Override
     public void update(float delta) {
+        if (!is_game_over && AssetLoader.levelMusic.getVolume() >= 0.1f)
+            AssetLoader.levelMusic.setVolume(AssetLoader.levelMusic.getVolume() - 0.0001f);
+        else if (is_game_over && AssetLoader.levelMusic.getVolume() <= BaseGame.musicVolume) {
+            AssetLoader.levelMusic.setVolume(AssetLoader.levelMusic.getVolume() + 0.00005f);
+            AssetLoader.levelMusic.setLooping(false);
+        }
+
         update_sheep();
+
+        // safe removal of sheep
+        for (int i = sheep.size - 1; i >= 0; i--) {
+            if (sheep.get(i).is_ready_to_be_removed) {
+                sheep.get(i).remove();
+                sheep.removeIndex(i);
+            }
+        }
     }
 
 
@@ -121,6 +141,9 @@ public class LevelScreen extends BaseScreen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 world_position = mainStage.screenToStageCoordinates(new Vector2(screenX, screenY));
         player.touch_position = world_position;
+
+        if (MathUtils.random() > 0.8f)
+            AssetLoader.dogSounds.get(MathUtils.random(0, AssetLoader.dogSounds.size - 1)).play(BaseGame.soundVolume, MathUtils.random(0.9f, 1.1f), 0f);
 
         EffectBurst effect = new EffectBurst();
         effect.setPosition(world_position.x, world_position.y);
@@ -162,15 +185,16 @@ public class LevelScreen extends BaseScreen {
 
             if (sheep.get(i).overlaps(water) && !is_on_a_bridge) { // death check
                 sheep.get(i).die();
-                sheep.removeIndex(i);
                 sheep_killed++;
+                AssetLoader.waterSound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
                 kill_label.setText(String.valueOf(sheep_killed));
             }
 
             if (sheep.get(i).overlaps(winArea)) { // win check
                 sheep.get(i).herded();
-                sheep.removeIndex(i);
                 sheep_herded++;
+                //AssetLoader.coinSound.play(BaseGame.soundVolume * 0.5f, MathUtils.random(0.8f, 1.2f), 0f);
+                AssetLoader.sheepSounds.get(MathUtils.random(0, AssetLoader.sheepSounds.size - 1)).play(BaseGame.soundVolume * 0.5f, MathUtils.random(0.6f, 1.4f), 0f);
                 score_label.setText(String.valueOf(sheep_herded));
                 checkWinCondition();
             }
@@ -189,6 +213,7 @@ public class LevelScreen extends BaseScreen {
         if (!sheep.isEmpty())
             return;
 
+        is_game_over = true;
         System.out.println("a winner is you!");
     }
 

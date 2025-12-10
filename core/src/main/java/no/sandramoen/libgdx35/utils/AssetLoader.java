@@ -25,10 +25,13 @@ public class AssetLoader implements AssetErrorListener {
     public static String shockwaveShader;
     public static String backgroundShader;
 
-    //public static Sound herdSound
+    public static Sound waterSound;
+    public static Sound coinSound;
+    public static Array<Sound> dogSounds;
+    public static Array<Sound> sheepSounds;
 
     public static Array<Music> music;
-    //public static Music levelMusic;
+    public static Music levelMusic;
     public static Music ambianceMusic;
     public static Music herdMusic;
 
@@ -67,9 +70,15 @@ public class AssetLoader implements AssetErrorListener {
         // music
         BaseGame.assetManager.load("audio/music/697045__gadesound__ambgras-tascamx8_meadow_kl_gades_tascamx8-0001.wav", Music.class);
         BaseGame.assetManager.load("audio/music/herdAmbiance.wav", Music.class);
+        BaseGame.assetManager.load("audio/music/106570__robinhood76__02224-scottish-pipes-march.mp3", Music.class);
 
         // sounds
-        //no.sandramoen.libgdx35.utils.BaseGame.assetManager.load("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/532886__bricklover__water-splash-3.mp3", Sound.class);
+        BaseGame.assetManager.load("audio/sounds/Pickup_Coin54.wav", Sound.class);
+        for (int i = 0; i <= 8; i++)
+            BaseGame.assetManager.load("audio/sounds/dog/" + i + ".wav", Sound.class);
+        for (int i = 0; i <= 4; i++)
+            BaseGame.assetManager.load("audio/sounds/sheep/" + i + ".wav", Sound.class);
 
         // i18n
 
@@ -100,9 +109,17 @@ public class AssetLoader implements AssetErrorListener {
         //music.add(levelMusic);
         ambianceMusic = BaseGame.assetManager.get("audio/music/697045__gadesound__ambgras-tascamx8_meadow_kl_gades_tascamx8-0001.wav", Music.class);
         herdMusic = BaseGame.assetManager.get("audio/music/herdAmbiance.wav", Music.class);
+        levelMusic = BaseGame.assetManager.get("audio/music/106570__robinhood76__02224-scottish-pipes-march.mp3", Music.class);
 
         // sounds
-        //new_letters_sound = no.sandramoen.libgdx35.utils.BaseGame.assetManager.get("audio/sounds/191511__hitrison__quick-chain-drops.wav", Sound.class);
+        waterSound = BaseGame.assetManager.get("audio/sounds/532886__bricklover__water-splash-3.mp3", Sound.class);
+        coinSound = BaseGame.assetManager.get("audio/sounds/Pickup_Coin54.wav", Sound.class);
+        dogSounds = new Array<Sound>();
+        for (int i = 0; i <= 8; i++)
+            dogSounds.add(BaseGame.assetManager.get("audio/sounds/dog/" + i + ".wav", Sound.class));
+        sheepSounds = new Array<Sound>();
+        for (int i = 0; i <= 4; i++)
+            sheepSounds.add(BaseGame.assetManager.get("audio/sounds/sheep/" + i + ".wav", Sound.class));
 
         // i18n
 

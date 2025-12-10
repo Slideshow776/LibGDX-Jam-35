@@ -3,11 +3,14 @@ package no.sandramoen.libgdx35.actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
+
+import no.sandramoen.libgdx35.utils.AssetLoader;
 import no.sandramoen.libgdx35.utils.BaseActor;
 import no.sandramoen.libgdx35.utils.BaseGame;
 
@@ -19,6 +22,7 @@ public class Player extends BaseActor {
     private float movementSpeed = 9f;
     private float movementAcceleration = movementSpeed * 6f;
 
+    boolean is_touch = false;
 
     public Player(Vector2 position, Stage stage) {
         super(position.x, position.y, stage);
@@ -67,6 +71,12 @@ public class Player extends BaseActor {
             float angle_to_touch = direction.angleDeg();
             accelerateAtAngle(angle_to_touch);
             setRotation(getMotionAngle() - 90);
+
+            //
+            if (!is_touch) {
+                is_touch = true;
+                AssetLoader.dogSounds.get(MathUtils.random(0, AssetLoader.dogSounds.size - 1)).play(BaseGame.soundVolume);
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
@@ -11,6 +12,8 @@ import no.sandramoen.libgdx35.utils.BaseActor;
 import no.sandramoen.libgdx35.utils.BaseGame;
 
 public class Sheep extends BaseActor {
+
+    public boolean is_ready_to_be_removed;
 
     private final float BORDER_DISTANCE_THRESHOLD = 0.5f;
     private final float PLAYER_DISTANCE_THRESHOLD = 5;
@@ -50,7 +53,8 @@ public class Sheep extends BaseActor {
     @Override
     public void act(float delta) {
         super.act(delta);
-        applyPhysics(delta);
+        if (isCollisionEnabled)
+            applyPhysics(delta);
     }
 
 
@@ -60,18 +64,34 @@ public class Sheep extends BaseActor {
 
 
     public void die() {
+        if (!isCollisionEnabled)
+            return;
+
         isCollisionEnabled = false;
-        remove();
+        float duration = 0.5f;
+        addAction(Actions.sequence(
+            Actions.parallel(
+                Actions.moveBy(-.5f, 0.0f, duration),
+                Actions.fadeOut(duration)
+            ),
+            Actions.run(() -> is_ready_to_be_removed = true)
+        ));
     }
 
 
     public void herded() {
+        if (!isCollisionEnabled)
+            return;
+
         isCollisionEnabled = false;
-        remove();
+        is_ready_to_be_removed = true;
     }
 
 
     public void updateBehaviour(Vector2 player_position, Array<Sheep> sheep) {
+        if (!isCollisionEnabled)
+            return;
+
         boolean isPlayerClose = get_center_position().dst(player_position) < PLAYER_DISTANCE_THRESHOLD;
         setMaxSpeed(isPlayerClose ? runningSpeed : walkingSpeed);
 
