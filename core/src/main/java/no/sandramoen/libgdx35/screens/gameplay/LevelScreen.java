@@ -233,11 +233,20 @@ public class LevelScreen extends BaseScreen {
         kill_label.setColor(Color.FIREBRICK);
         kill_label.setAlignment(Align.center);
 
-        Image high_score_image = new Image(AssetLoader.textureAtlas.findRegion("crown"));
-        high_score_label = new TextraLabel("1000" + "", AssetLoader.getLabelStyle("Alegreya59white"));
-        high_score_label.getFont().scale(label_scale);
-        high_score_label.setColor(Color.BLACK);
-        high_score_label.setAlignment(Align.center);
+        /*Image left_border_image = new Image(AssetLoader.textureAtlas.findRegion("pattern"));
+        left_border_image.setSize(Gdx.graphics.getWidth() * 0.02f, Gdx.graphics.getHeight() * 1f);
+        uiStage.addActor(left_border_image);
+
+        Image top_border_image = new Image(AssetLoader.textureAtlas.findRegion("pattern"));
+        top_border_image.setSize(Gdx.graphics.getWidth() * 0.02f, Gdx.graphics.getHeight() * 1f);
+        top_border_image.rotateBy(90);
+        top_border_image.setPosition(Gdx.graphics.getWidth(), Gdx.graphics.getHeight() - top_border_image.getWidth());
+        uiStage.addActor(top_border_image);
+
+        Image right_border_image = new Image(AssetLoader.textureAtlas.findRegion("pattern"));
+        right_border_image.setSize(Gdx.graphics.getWidth() * 0.02f, Gdx.graphics.getHeight() * 1f);
+        right_border_image.setPosition(Gdx.graphics.getWidth() - right_border_image.getWidth(), 0.0f);
+        uiStage.addActor(right_border_image);*/
 
         // ui setup
         uiTable.defaults()
