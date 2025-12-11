@@ -17,6 +17,7 @@ import no.sandramoen.libgdx35.utils.BaseGame;
 public class Sheep extends BaseActor {
 
     public boolean is_ready_to_be_removed;
+    public int scoreMultiplier = 1;
 
     private final float BORDER_DISTANCE_THRESHOLD = 0.5f;
     private final float PLAYER_DISTANCE_THRESHOLD = 4.5f;

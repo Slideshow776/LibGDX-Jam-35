@@ -40,6 +40,7 @@ public class LevelScreen extends BaseScreen {
     private final int NUM_SHEEP = 480;
     private int sheep_killed = 0;
     private int sheep_herded = 0;
+    private int score = 0;
 
     private TextraLabel score_label;
     private TextraLabel kill_label;
@@ -195,8 +196,10 @@ public class LevelScreen extends BaseScreen {
                 temp = s.preventOverlap(bridge.right_rail);
                 if (temp != null) s.accelerateAtAngle(temp.angleDeg());
 
-                if (s.overlaps(bridge))
+                if (s.overlaps(bridge)) {
                     is_on_a_bridge = true;
+                    s.scoreMultiplier = bridge.multiplier;
+                }
 
             }
 
@@ -210,9 +213,10 @@ public class LevelScreen extends BaseScreen {
             if (s.overlaps(winArea)) { // win check
                 s.herded();
                 sheep_herded++;
+                score += s.scoreMultiplier;
                 //AssetLoader.coinSound.play(BaseGame.soundVolume * 0.5f, MathUtils.random(0.8f, 1.2f), 0f);
                 AssetLoader.sheepSounds.get(MathUtils.random(0, AssetLoader.sheepSounds.size - 1)).play(BaseGame.soundVolume * 0.5f, MathUtils.random(0.6f, 1.4f), 0f);
-                score_label.setText(String.valueOf(sheep_herded));
+                score_label.setText(String.valueOf(score));
                 checkWinCondition();
             }
         }
