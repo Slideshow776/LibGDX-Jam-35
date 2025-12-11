@@ -38,13 +38,11 @@ public class LevelScreen extends BaseScreen {
 
     private boolean is_game_over = false;
     private final int NUM_SHEEP = 480;
-    private final float VARIANCE = 0.25f;
     private int sheep_killed = 0;
     private int sheep_herded = 0;
 
     private TextraLabel score_label;
     private TextraLabel kill_label;
-    private TextraLabel high_score_label;
 
     private QuadTreeFloat quad;
 
@@ -116,9 +114,9 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
-        if (!is_game_over && AssetLoader.levelMusic.getVolume() >= 0.1f)
+        if (!is_game_over && AssetLoader.levelMusic.getVolume() >= 0.05f) // lower music volume on start
             AssetLoader.levelMusic.setVolume(AssetLoader.levelMusic.getVolume() - 0.0001f);
-        else if (is_game_over && AssetLoader.levelMusic.getVolume() <= BaseGame.musicVolume) {
+        else if (is_game_over && AssetLoader.levelMusic.getVolume() <= BaseGame.musicVolume) { // raise music volume on end
             AssetLoader.levelMusic.setVolume(AssetLoader.levelMusic.getVolume() + 0.00005f);
             AssetLoader.levelMusic.setLooping(false);
         }
@@ -239,13 +237,13 @@ public class LevelScreen extends BaseScreen {
         // resources setup
         float label_scale = 0.5f;
         Image score_image = new Image(AssetLoader.textureAtlas.findRegion("trophy"));
-        score_label = new TextraLabel("0", AssetLoader.getLabelStyle("Alegreya59white"));
+        score_label = new TextraLabel("0", AssetLoader.getLabelStyle("IrishGrover_59"));
         score_label.getFont().scale(label_scale);
         score_label.setColor(Color.FOREST);
         score_label.setAlignment(Align.center);
 
         Image kill_image = new Image(AssetLoader.textureAtlas.findRegion("skull"));
-        kill_label = new TextraLabel("0", AssetLoader.getLabelStyle("Alegreya59white"));
+        kill_label = new TextraLabel("0", AssetLoader.getLabelStyle("IrishGrover_59"));
         kill_label.getFont().scale(label_scale);
         kill_label.setColor(Color.FIREBRICK);
         kill_label.setAlignment(Align.center);
