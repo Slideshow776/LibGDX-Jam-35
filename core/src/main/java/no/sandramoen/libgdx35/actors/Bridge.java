@@ -3,15 +3,20 @@ package no.sandramoen.libgdx35.actors;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.github.tommyettinger.textra.TextraLabel;
 
+import no.sandramoen.libgdx35.utils.AssetLoader;
 import no.sandramoen.libgdx35.utils.BaseActor;
 
 public class Bridge extends BaseActor {
     public BaseActor left_rail;
     public BaseActor right_rail;
+    public int multiplier;
 
-    public Bridge(Vector2 position, Vector2 size, Stage stage) {
+    public Bridge(Vector2 position, Vector2 size, Stage stage, int multiplier) {
         super(position.x, position.y, stage);
+        this.multiplier = multiplier;
 
         loadImage("whitePixel");
         setSize(size.x, size.y);
@@ -34,5 +39,15 @@ public class Bridge extends BaseActor {
         right_rail.setPosition(getX() + size.x - right_rail.getWidth(), getY());
         right_rail.setBoundaryRectangle(1f);
         stage.addActor(right_rail);
+
+        TextraLabel label = new TextraLabel(multiplier + "x", AssetLoader.getLabelStyle("IrishGrover_20"));
+        label.setSize(1f, 1f);
+        label.setColor(new Color(0x6c4b3aFF));
+        label.getFont().scale(0.005f);
+        label.setPosition(
+            getWidth() / 2 - 0.175f,
+            getHeight() / 2 - 0.5f
+        );
+        addActor(label);
     }
 }
