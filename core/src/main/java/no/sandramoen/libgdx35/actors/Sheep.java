@@ -1,5 +1,6 @@
 package no.sandramoen.libgdx35.actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -207,9 +208,9 @@ public class Sheep extends BaseActor {
 
 
     private void wander() {
-        if (MathUtils.random() < 0.1f) {
-            float random_angle = MathUtils.random(-10f, 10f);
-            accelerateAtAngle(getMotionAngle() + random_angle);
+        if (MathUtils.random() < 0.05f) {
+            float random_angle = MathUtils.random(-10f, 10f) * Gdx.graphics.getDeltaTime();
+            setMotionAngle(getMotionAngle() + random_angle);
         }
     }
 }
