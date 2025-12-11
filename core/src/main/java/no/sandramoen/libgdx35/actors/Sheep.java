@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
+import com.badlogic.gdx.utils.FloatArray;
+import com.badlogic.gdx.utils.QuadTreeFloat;
 import no.sandramoen.libgdx35.utils.BaseActor;
 import no.sandramoen.libgdx35.utils.BaseGame;
 
@@ -24,9 +26,11 @@ public class Sheep extends BaseActor {
     private float runningSpeed = 0.5f + MathUtils.random(-0.05f, 0.1f);
     private float movementAcceleration = runningSpeed * 0.75f + MathUtils.random(-0.05f, 0.05f);
 
+    private static final FloatArray results = new FloatArray(256);
 
-    public Sheep(Vector2 position, Stage stage) {
-        super(position.x, position.y, stage);
+
+    public Sheep(float x, float y, Stage stage) {
+        super(x, y, stage);
         loadImage("whitePixel");
         setColor(new Color(0xf2d1d3FF));
 
@@ -36,7 +40,7 @@ public class Sheep extends BaseActor {
             0.2f
         );
         setSize(getWidth(), getWidth() * 2f + + MathUtils.random(-0.05f, 0.05f));
-        centerAtPosition(position.x, position.y);
+        centerAtPosition(x, y);
         setOrigin(Align.center);
         setBoundaryRectangle(0.5f);
         //setBoundaryPolygon(8, 0.9f);
@@ -88,23 +92,23 @@ public class Sheep extends BaseActor {
     }
 
 
-    public void updateBehaviour(Vector2 player_position, Array<Sheep> sheep) {
+    public void updateBehaviour(float playerX, float playerY, Array<Sheep> sheep, QuadTreeFloat quad) {
         if (!isCollisionEnabled)
             return;
 
-        boolean isPlayerClose = get_center_position().dst(player_position) < PLAYER_DISTANCE_THRESHOLD;
+        boolean isPlayerClose = Vector2.dst(getX(), getY(), playerX, playerY) < PLAYER_DISTANCE_THRESHOLD;
         setMaxSpeed(isPlayerClose ? runningSpeed : walkingSpeed);
 
         avoidBorders();
-        avoidPlayer(player_position);
+        avoidPlayer(playerX, playerY);
 
         if (isPlayerClose) {
-            applyAlignment(sheep);
-            applyCohesion(sheep);
+            applyAlignment(sheep, quad);
+            applyCohesion(sheep, quad);
         } else {
             wander();
         }
-        applySeparation(sheep);
+        applySeparation(sheep, quad);
 
         setRotation(getMotionAngle() - 90);
     }
@@ -128,8 +132,8 @@ public class Sheep extends BaseActor {
     }
 
 
-    private void avoidPlayer(Vector2 player_position) {
-        Vector2 away_from_player = get_center_position().sub(player_position);
+    private void avoidPlayer(float playerX, float playerY) {
+        Vector2 away_from_player = get_center_position().sub(playerX, playerY);
         float distance_to_player = away_from_player.len();
 
         if (distance_to_player < PLAYER_DISTANCE_THRESHOLD) {
@@ -139,20 +143,19 @@ public class Sheep extends BaseActor {
     }
 
 
-    private void applyAlignment(Array<Sheep> sheep) {
+    private void applyAlignment(Array<Sheep> sheep, QuadTreeFloat quad) {
         Vector2 alignment = new Vector2();
         int alignmentCount = 0;
 
-        for (Sheep other : sheep) {
+        results.clear();
+        quad.query(getX(Align.center), getY(Align.center), ALIGNMENT_THRESHOLD, results);
+        for (int i = 0, n = results.size; i < n; i+= 4) {
+            int idx = (int) results.get(i);
+            Sheep other = sheep.get(idx);
             if (other == this)
                 continue;
-
-            float distance = Vector2.dst(other.getX(Align.center), other.getY(Align.center),
-                getX(Align.center), getY(Align.center));
-            if (distance < ALIGNMENT_THRESHOLD) {
-                alignment.add(other.velocityVec);
-                alignmentCount++;
-            }
+            alignment.add(other.velocityVec);
+            alignmentCount++;
         }
 
         if (alignmentCount > 0) {
@@ -162,21 +165,21 @@ public class Sheep extends BaseActor {
     }
 
 
-    private void applyCohesion(Array<Sheep> sheep) {
+    private void applyCohesion(Array<Sheep> sheep, QuadTreeFloat quad) {
         Vector2 cohesion = new Vector2();
         int cohesionCount = 0;
 
-        for (Sheep other : sheep) {
+
+        results.clear();
+        quad.query(getX(Align.center), getY(Align.center), COHESION_THRESHOLD, results);
+        for (int i = 0, n = results.size; i < n; i+= 4) {
+            int idx = (int) results.get(i);
+            Sheep other = sheep.get(idx);
             if (other == this)
                 continue;
 
-
-            float distance = Vector2.dst(other.getX(Align.center), other.getY(Align.center),
-                getX(Align.center), getY(Align.center));
-            if (distance < COHESION_THRESHOLD) {
-                cohesion.add(other.getX(Align.center), other.getY(Align.center));
-                cohesionCount++;
-            }
+            cohesion.add(other.getX(Align.center), other.getY(Align.center));
+            cohesionCount++;
         }
 
         if (cohesionCount > 0) {
@@ -187,8 +190,12 @@ public class Sheep extends BaseActor {
     }
 
 
-    private void applySeparation(Array<Sheep> sheep) {
-        for (Sheep other : sheep) {
+    private void applySeparation(Array<Sheep> sheep, QuadTreeFloat quad) {
+        results.clear();
+        quad.query(getX(Align.center), getY(Align.center), 0.5f, results);
+        for (int i = 0, n = results.size; i < n; i+= 4) {
+            int idx = (int)results.get(i);
+            Sheep other = sheep.get(idx);
             if (other == this)
                 continue;
 

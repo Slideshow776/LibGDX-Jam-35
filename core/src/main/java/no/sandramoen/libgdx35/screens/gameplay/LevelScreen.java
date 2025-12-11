@@ -24,6 +24,8 @@ import no.sandramoen.libgdx35.utils.BaseActor;
 import no.sandramoen.libgdx35.utils.BaseGame;
 import no.sandramoen.libgdx35.utils.BaseScreen;
 
+import com.badlogic.gdx.utils.QuadTreeFloat;
+
 public class LevelScreen extends BaseScreen {
 
     private BaseActor overlay;
@@ -44,6 +46,7 @@ public class LevelScreen extends BaseScreen {
     private TextraLabel kill_label;
     private TextraLabel high_score_label;
 
+    private QuadTreeFloat quad;
 
     public LevelScreen() {}
 
@@ -87,15 +90,19 @@ public class LevelScreen extends BaseScreen {
             mainStage
         ));
 
+        quad = new QuadTreeFloat(128, 5);
+        quad.setBounds(0, 0, BaseGame.WORLD_WIDTH, BaseGame.WORLD_HEIGHT);
+
         sheep = new Array<Sheep>();
-        for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(12, 7.5f), mainStage));
-        for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(10, 2f), mainStage));
-        for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(3, 4f), mainStage));
-        for (int i = 0; i < NUM_SHEEP / 4; i++)
-            sheep.add(new Sheep(new Vector2(2, 1.25f), mainStage));
+        for (int i = 0; i < NUM_SHEEP / 4; i++) sheep.add(new Sheep(12, 7.5f, mainStage));
+        for (int i = 0; i < NUM_SHEEP / 4; i++) sheep.add(new Sheep(10, 2f, mainStage));
+        for (int i = 0; i < NUM_SHEEP / 4; i++) sheep.add(new Sheep(3, 4f, mainStage));
+        for (int i = 0; i < NUM_SHEEP / 4; i++) sheep.add(new Sheep(2, 1.25f, mainStage));
+
+        for (int i = 0, n = sheep.size; i < n; i++) {
+            Sheep s = sheep.get(i);
+            quad.add(i, s.getX(Align.center), s.getY(Align.center));
+        }
 
         player = new Player(new Vector2(14, 2), mainStage);
 
@@ -119,12 +126,22 @@ public class LevelScreen extends BaseScreen {
         update_sheep();
 
         // safe removal of sheep
+        // allows faster removal when we can safely rearrange sheep indices.
+        sheep.ordered = false;
         for (int i = sheep.size - 1; i >= 0; i--) {
             if (sheep.get(i).is_ready_to_be_removed) {
                 sheep.get(i).remove();
                 sheep.removeIndex(i);
             }
         }
+        // must set ordered back to true when we're done deleting.
+        sheep.ordered = true;
+        quad.reset();
+        for (int i = 0, n = sheep.size; i < n; i++) {
+            Sheep s = sheep.get(i);
+            quad.add(i, s.getX(Align.center), s.getY(Align.center));
+        }
+
     }
 
 
@@ -160,38 +177,38 @@ public class LevelScreen extends BaseScreen {
         float player_distance = 100f;
         // collision checks
         for (int i = 0; i < sheep.size; i++) {
+            Sheep s = sheep.get(i);
             // guard rails
-            sheep.get(i).updateBehaviour(player.get_center_position(), sheep);
+            s.updateBehaviour(player.getX(), player.getY(), sheep, quad);
 
-            if (sheep.get(i).get_center_position().dst(player.get_center_position()) < player_distance)
-                player_distance = sheep.get(i).get_center_position().dst(player.get_center_position());
+            player_distance = Math.min(player_distance, Vector2.dst(s.getX(), s.getY(), player.getX(), player.getY()));
 
             // collision checks
             boolean is_on_a_bridge = false;
 
             for (Bridge bridge : bridges) {
                 // left guard-rail
-                Vector2 temp = sheep.get(i).preventOverlap(bridge.left_rail);
-                if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
+                Vector2 temp = s.preventOverlap(bridge.left_rail);
+                if (temp != null) s.accelerateAtAngle(temp.angleDeg());
 
                 // right guard-rail
-                temp = sheep.get(i).preventOverlap(bridge.right_rail);
-                if (temp != null) sheep.get(i).accelerateAtAngle(temp.angleDeg());
+                temp = s.preventOverlap(bridge.right_rail);
+                if (temp != null) s.accelerateAtAngle(temp.angleDeg());
 
-                if (sheep.get(i).overlaps(bridge))
+                if (s.overlaps(bridge))
                     is_on_a_bridge = true;
 
             }
 
-            if (sheep.get(i).overlaps(water) && !is_on_a_bridge) { // death check
-                sheep.get(i).die();
+            if (s.overlaps(water) && !is_on_a_bridge) { // death check
+                s.die();
                 sheep_killed++;
                 AssetLoader.waterSound.play(BaseGame.soundVolume, MathUtils.random(0.8f, 1.2f), 0f);
                 kill_label.setText(String.valueOf(sheep_killed));
             }
 
-            if (sheep.get(i).overlaps(winArea)) { // win check
-                sheep.get(i).herded();
+            if (s.overlaps(winArea)) { // win check
+                s.herded();
                 sheep_herded++;
                 //AssetLoader.coinSound.play(BaseGame.soundVolume * 0.5f, MathUtils.random(0.8f, 1.2f), 0f);
                 AssetLoader.sheepSounds.get(MathUtils.random(0, AssetLoader.sheepSounds.size - 1)).play(BaseGame.soundVolume * 0.5f, MathUtils.random(0.6f, 1.4f), 0f);
