@@ -144,9 +144,9 @@ public class AssetLoader implements AssetErrorListener {
         float scale = Gdx.graphics.getWidth() * .05f; // magic number ensures scale ~= 1, based on screen width
         scale *= 1.01f; // make x percent bigger, bigger = more fuzzy
 
-        mySkin.get("Alegreya20white", Font.class).scale(scale);
-        mySkin.get("Alegreya40white", Font.class).scale(scale);
-        mySkin.get("Alegreya59white", Font.class).scale(scale);
+        mySkin.get("IrishGrover_20", Font.class).scale(scale);
+        mySkin.get("IrishGrover_40", Font.class).scale(scale);
+        mySkin.get("IrishGrover_59", Font.class).scale(scale);
     }
 
     private static void loadTiledMap() {
