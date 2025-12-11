@@ -253,13 +253,11 @@ public class BaseActor extends Group {
     }
 
     public void accelerateAtAngle(float angle) {
-        accelerationVec.add(
-                new Vector2(acceleration, 0).setAngleDeg(angle));
+        accelerationVec.add(MathUtils.cosDeg(angle) * acceleration, MathUtils.sinDeg(angle) * acceleration);
     }
 
     public void accelerateAtAngle(float external_force, float angle) {
-        accelerationVec.add(
-                new Vector2(external_force, 0).setAngleDeg(angle));
+        accelerationVec.add(MathUtils.cosDeg(angle) * external_force, MathUtils.sinDeg(angle) * external_force);
     }
 
     public void accelerateForward() {
