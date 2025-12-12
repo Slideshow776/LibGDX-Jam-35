@@ -91,7 +91,7 @@ public class LevelScreen extends BaseScreen {
             4
         ));
 
-        quad = new QuadTreeFloat(128, 5);
+        quad = new QuadTreeFloat(32, 6);
         quad.setBounds(0, 0, BaseGame.WORLD_WIDTH, BaseGame.WORLD_HEIGHT);
 
         sheep = new Array<Sheep>();
