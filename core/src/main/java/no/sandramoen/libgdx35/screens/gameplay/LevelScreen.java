@@ -126,7 +126,7 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
-        System.out.println(AssetLoader.levelMusic.getVolume());
+        System.out.println("LevelScreen.java => levelMusic volume = " + AssetLoader.levelMusic.getVolume());
         if (!is_game_over && AssetLoader.levelMusic.getVolume() >= 0.25f) // lower music volume on start
             AssetLoader.levelMusic.setVolume(AssetLoader.levelMusic.getVolume() - 0.00015f);
         else if (is_game_over && AssetLoader.levelMusic.getVolume() <= BaseGame.musicVolume) { // raise music volume on end
