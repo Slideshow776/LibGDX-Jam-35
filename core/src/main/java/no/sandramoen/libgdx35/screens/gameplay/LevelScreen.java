@@ -15,6 +15,7 @@ import no.sandramoen.libgdx35.actors.Bridge;
 import no.sandramoen.libgdx35.actors.Grass;
 import no.sandramoen.libgdx35.actors.Overlay;
 import no.sandramoen.libgdx35.actors.Player;
+import no.sandramoen.libgdx35.actors.Rock;
 import no.sandramoen.libgdx35.actors.Sheep;
 import no.sandramoen.libgdx35.actors.Water;
 import no.sandramoen.libgdx35.actors.WinArea;
@@ -34,6 +35,7 @@ public class LevelScreen extends BaseScreen {
     private Array<Bridge> bridges;
     private Player player;
     private Array<Sheep> sheep;
+    private Array<Rock> rocks;
     private WinArea winArea;
 
     private boolean is_game_over = false;
@@ -53,6 +55,9 @@ public class LevelScreen extends BaseScreen {
     @Override
     public void initialize() {
         // audio
+        BaseGame.soundVolume = 1.0f;
+        BaseGame.musicVolume = 1.0f;
+
         AssetLoader.ambianceMusic.setLooping(true);
         AssetLoader.ambianceMusic.setPosition(MathUtils.random(0f, 40f));
         AssetLoader.ambianceMusic.setVolume(BaseGame.musicVolume);
@@ -72,8 +77,8 @@ public class LevelScreen extends BaseScreen {
         grass = new Grass(mainStage);
 
         water = new Water(
-            new Vector2(0, 11.5f),
-            new Vector2(BaseGame.WORLD_WIDTH, 3),
+            new Vector2(-1, 11.5f),
+            new Vector2(BaseGame.WORLD_WIDTH * 1.2f, 3),
             mainStage
         );
 
@@ -93,6 +98,10 @@ public class LevelScreen extends BaseScreen {
 
         quad = new QuadTreeFloat(32, 6);
         quad.setBounds(0, 0, BaseGame.WORLD_WIDTH, BaseGame.WORLD_HEIGHT);
+
+        rocks = new Array<Rock>();
+        /*rocks.add(new Rock(8f, 2.5f, mainStage));
+        rocks.add(new Rock(4f, 5f, mainStage));*/
 
         sheep = new Array<Sheep>();
         for (int i = 0; i < NUM_SHEEP / 4; i++) sheep.add(new Sheep(12, 7.5f, mainStage));
@@ -117,10 +126,11 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
-        if (!is_game_over && AssetLoader.levelMusic.getVolume() >= 0.05f) // lower music volume on start
-            AssetLoader.levelMusic.setVolume(AssetLoader.levelMusic.getVolume() - 0.0001f);
+        System.out.println(AssetLoader.levelMusic.getVolume());
+        if (!is_game_over && AssetLoader.levelMusic.getVolume() >= 0.25f) // lower music volume on start
+            AssetLoader.levelMusic.setVolume(AssetLoader.levelMusic.getVolume() - 0.00015f);
         else if (is_game_over && AssetLoader.levelMusic.getVolume() <= BaseGame.musicVolume) { // raise music volume on end
-            AssetLoader.levelMusic.setVolume(AssetLoader.levelMusic.getVolume() + 0.00005f);
+            AssetLoader.levelMusic.setVolume(AssetLoader.levelMusic.getVolume() + 0.00015f);
             AssetLoader.levelMusic.setLooping(false);
         }
 
@@ -185,8 +195,11 @@ public class LevelScreen extends BaseScreen {
             player_distance = Math.min(player_distance, Vector2.dst(s.getX(), s.getY(), player.getX(), player.getY()));
 
             // collision checks
-            boolean is_on_a_bridge = false;
+            /*for (Rock rock : rocks) {
+                s.preventOverlap(rock);
+            }*/
 
+            boolean is_on_a_bridge = false;
             for (Bridge bridge : bridges) {
                 // left guard-rail
                 Vector2 temp = s.preventOverlap(bridge.left_rail);
@@ -214,7 +227,6 @@ public class LevelScreen extends BaseScreen {
                 s.herded();
                 sheep_herded++;
                 score += s.scoreMultiplier;
-                //AssetLoader.coinSound.play(BaseGame.soundVolume * 0.5f, MathUtils.random(0.8f, 1.2f), 0f);
                 AssetLoader.sheepSounds.get(MathUtils.random(0, AssetLoader.sheepSounds.size - 1)).play(BaseGame.soundVolume * 0.5f, MathUtils.random(0.6f, 1.4f), 0f);
                 score_label.setText(String.valueOf(score));
                 checkWinCondition();
@@ -231,7 +243,8 @@ public class LevelScreen extends BaseScreen {
 
 
     private void checkWinCondition() {
-        if (!sheep.isEmpty())
+        //System.out.println(sheep.size + ", " + MathUtils.ceil(NUM_SHEEP * 0.02f));
+        if (sheep.size >= MathUtils.ceil(NUM_SHEEP * 0.02f))
             return;
 
         is_game_over = true;
