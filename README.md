@@ -1,7 +1,9 @@
 # LibGDX Jam #35
 A jam game made by [tommyettinger](https://github.com/tommyettinger) and me.
 
-[Play it here](https://slideshow776.github.io/LibGDX-Jam-35/).
+[Play it here](https://sandramoen.itch.io/libgdx-jam-35).
+
+<img width="315" height="250" alt="image" src="https://github.com/user-attachments/assets/a1e91c88-c179-4f97-a03f-48746993081a" />
 
 ## libGDX
 
